@@ -3,13 +3,13 @@
 namespace App\Entity;
 
 use App\Entity\Base\TraitEntity;
-use App\Repository\TPaysRepository;
+use App\Repository\TCategorieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: TPaysRepository::class)]
-class TPays
+#[ORM\Entity(repositoryClass: TCategorieRepository::class)]
+class TCategorie
 {
     use TraitEntity;
     
@@ -19,17 +19,17 @@ class TPays
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nom = null;
+    private ?string $titre = null;
 
     #[ORM\Column(length: 1000, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\OneToMany(mappedBy: 'fk_pays', targetEntity: TUser::class)]
-    private Collection $tUsers;
+    #[ORM\OneToMany(mappedBy: 'fk_categories', targetEntity: TArticle::class)]
+    private Collection $tArticles;
 
     public function __construct()
     {
-        $this->tUsers = new ArrayCollection();
+        $this->tArticles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -37,14 +37,14 @@ class TPays
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getTitre(): ?string
     {
-        return $this->nom;
+        return $this->titre;
     }
 
-    public function setNom(string $nom): self
+    public function setTitre(string $titre): self
     {
-        $this->nom = $nom;
+        $this->titre = $titre;
 
         return $this;
     }
@@ -62,29 +62,29 @@ class TPays
     }
 
     /**
-     * @return Collection<int, TUser>
+     * @return Collection<int, TArticle>
      */
-    public function getTUsers(): Collection
+    public function getTArticles(): Collection
     {
-        return $this->tUsers;
+        return $this->tArticles;
     }
 
-    public function addTUser(TUser $tUser): self
+    public function addTArticle(TArticle $tArticle): self
     {
-        if (!$this->tUsers->contains($tUser)) {
-            $this->tUsers->add($tUser);
-            $tUser->setFkPays($this);
+        if (!$this->tArticles->contains($tArticle)) {
+            $this->tArticles->add($tArticle);
+            $tArticle->setFkCategories($this);
         }
 
         return $this;
     }
 
-    public function removeTUser(TUser $tUser): self
+    public function removeTArticle(TArticle $tArticle): self
     {
-        if ($this->tUsers->removeElement($tUser)) {
+        if ($this->tArticles->removeElement($tArticle)) {
             // set the owning side to null (unless already changed)
-            if ($tUser->getFkPays() === $this) {
-                $tUser->setFkPays(null);
+            if ($tArticle->getFkCategories() === $this) {
+                $tArticle->setFkCategories(null);
             }
         }
 

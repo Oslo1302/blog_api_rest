@@ -1,17 +1,37 @@
 security:
+    role_hierarchy:
+        ROLE_AUTHOR: ROLE_ADMIN
+        ROLE_ROOT: [ROLE_ADMIN]
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
+        users_provider:
+            entity: {class: App\Entity\TUsers, property: username}
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        api_blog:
+            pattern: /api/v1/secure
+            stateless: true
+            lazy: false
+            provider: users_provider
+            json_login:
+                check_path: /api/v1/secure
+                username_path: username
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            
         main:
             lazy: true
             provider: users_in_memory
+            custom_authenticators: 
+                - App\Controller\Api\v1\SecurityController
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -22,8 +42,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/v1, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/secure, roles: ROLE_AUTHOR }
 
 when@test:
     security:

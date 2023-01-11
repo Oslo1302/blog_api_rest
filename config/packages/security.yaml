@@ -1,4 +1,5 @@
 security:
+    enable_authenticator_manager: true
     role_hierarchy:
         ROLE_AUTHOR: ROLE_ADMIN
         ROLE_ROOT: [ROLE_ADMIN]
@@ -8,20 +9,21 @@ security:
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users_in_memory: { memory: null }
-        users_provider:
-            entity: {class: App\Entity\TUsers, property: username}
+        app_user_provider:
+            entity:
+                class: App\Entity\TUser
+                property: username
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
         api_blog:
-            pattern: /api/v1/secure
+            #pattern: ^/api/v1/login
             stateless: true
-            lazy: false
-            provider: users_provider
+            provider: app_user_provider
             json_login:
-                check_path: /api/v1/secure
+                check_path: /api/v1/login_check
                 username_path: username
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success

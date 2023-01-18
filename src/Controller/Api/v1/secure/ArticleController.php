@@ -9,7 +9,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 #[Package("App\Controller\Api\v1\secure")]
 #[Route("/api/v1/secure")]
-#[]
 class ArticleController extends AbstractController
 {
     #[Route("articles", name: "articles")]
